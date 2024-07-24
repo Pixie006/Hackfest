@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MY BANK</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  /* Chatbot Styles */
+  .chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1b1b82;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1000;
+    
+  }
+
+  .chat-button img {
+    width: 30px;
+    height: 30px;
+}
+
+  .chat-window {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .chat-header {
+    background-color: #181918;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    text-align: center;
+  }
+
+  .chatbox {
+    height: 250px;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .chat-input-container {
+    display: flex;
+    padding: 10px;
+  }
+
+  .chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .chat-send-button {
+    padding: 10px;
+    margin-left: 10px;
+    background-color: #0e0429;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-wide w3-padding w3-card">
+    <a href="#home" class="w3-bar-item w3-button"><b>MY</b> BANK</a>
+    <!-- Float links to the right. Hide them on small screens -->
+    <div class="w3-right w3-hide-small">
+      <a href="#projects" class="w3-bar-item w3-button">Loans</a>
+      <a href="#about" class="w3-bar-item w3-button">About</a>
+      <a href="#contact" class="w3-bar-item w3-button">Contact</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
+  <img class="w3-image" src="architect.jpg" alt="Architecture" width="1500" height="800">
+  <div class="w3-display-middle w3-margin-top w3-center">
+    <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>MY</b></span> <span class="w3-hide-small w3-text-light-grey">BANK</span></h1>
+  </div>
+</header>
+
+<!-- Chatbot Button and Window -->
+<button class="chat-button" onclick="toggleChat()">💬</button>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    Mitra
+  </div>
+  <div class="chatbox" id="chatbox"></div>
+  <div class="chat-input-container">
+    <input type="text" id="chatInput" class="chat-input" placeholder="Type a message">
+    <button onclick="sendMessage()" class="chat-send-button">Send</button>
+    <button onclick="startListening()" class="chat-send-button">🎤</button>
+  </div>
+</div>
+
+<!-- Page content -->
+<div class="w3-content w3-padding" style="max-width:1564px">
+
+  <!-- About Section -->
+  <div class="w3-container w3-padding-32" id="about">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
+    <p>Welcome to MyBank, where we prioritize your financial well-being. At MyBank, we offer a comprehensive range of banking services tailored to meet your needs. Whether you're looking for a personal loan, home loan, or simply need assistance managing your account, our dedicated team is here to help.
+
+      Our mission is to provide exceptional customer service and innovative financial solutions. We strive to make banking simple, accessible, and beneficial for you. With a focus on security and convenience, MyBank ensures your transactions are safe and your experience is seamless.
+      
+      Join us and discover how MyBank can support your financial goals today and in the future.</p>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-16">
+  <p> <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">MY BANK</a></p>
+</footer>
+
+<script>
+  // Function to toggle chat window visibility
+  function toggleChat() {
+    const chatWindow = document.getElementById("chatWindow");
+    if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
+      chatWindow.style.display = "block";
+    } else {
+      chatWindow.style.display = "none";
+    }
+  }
+
+  // Basic chatbot responses
+  const responses = {
+    "hi": "Hello!, I am Mitra How can I assist you today?",
+    "hello": "Hi there! What can I do for you?",
+    "loan": "Are you interested in learning more about our home loans or personal loans?",
+    "contact": "You can reach us at contact@mybank.com or call us at (123) 456-7890.",
+    "account": "Need help with your account? I can assist with account queries and transactions.",
+    "default": "I'm sorry, I didn't understand that. Could you please rephrase?"
+  };
+
+  // Function to send message
+  function sendMessage() {
+    const chatbox = document.getElementById("chatbox");
+    const input = document.getElementById("chatInput");
+    const userMessage = input.value.toLowerCase();
+    input.value = "";
+
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.textContent = "You: " + userMessage;
+    chatbox.appendChild(userMessageDiv);
+
+    const botMessage = responses[userMessage] || responses["default"];
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.textContent = "Bot: " + botMessage;
+    chatbox.appendChild(botMessageDiv);
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  // Function to start listening to voice input
+  function startListening() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.lang = 'en-US';
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      const input = document.getElementById("chatInput");
+      input.value = transcript;
+      sendMessage();
+    };
+
+    recognition.onspeechend = function() {
+      recognition.stop();
+    };
+
+    recognition.onerror = function(event) {
+      console.error("Speech recognition error detected: " + event.error);
+    };
+  }
+</script>
+
+</body>
+</html>
+
