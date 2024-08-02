@@ -11,7 +11,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #1b1b82;
+    background-color: #050511;
     color: white;
     border: none;
     border-radius: 50%;
@@ -20,13 +20,12 @@
     cursor: pointer;
     font-size: 24px;
     z-index: 1000;
-    
   }
 
   .chat-button img {
     width: 30px;
     height: 30px;
-}
+  }
 
   .chat-window {
     display: none;
@@ -52,32 +51,89 @@
   }
 
   .chatbox {
-    height: 250px;
+    height: 300px;
     overflow-y: auto;
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    font-size: 14px;
+    word-wrap: break-word;
   }
 
   .chat-input-container {
     display: flex;
-    padding: 10px;
+    padding: 5px;
+    align-items: center;
   }
 
   .chat-input {
     flex: 1;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
 
-  .chat-send-button {
-    padding: 10px;
-    margin-left: 10px;
+  .chat-send-button, .chat-voice-button {
+    padding: 2px 2px;
+    margin-left: 2px;
     background-color: #0e0429;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+  }
+
+  .chat-header img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+
+  /* Style for user messages */
+  .user-message {
+    background-color: #e1f5fe;
+    color: #000;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 5px;
+    max-width: 70%;
+    align-self: flex-end;
+    text-align: left;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  /* Style for bot messages */
+  .bot-message {
+    background-color: #f1f8e9;
+    color: #000;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 5px;
+    max-width: 70%;
+    align-self: flex-start;
+    text-align: left;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  /* Style for buttons */
+  .chat-buttons-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+
+  .chat-button-item {
+    padding: 5px 10px;
+    background-color: #0e0429;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .chat-button-item:hover {
+    background-color: #333;
   }
 </style>
 </head>
@@ -109,13 +165,14 @@
 
 <div class="chat-window" id="chatWindow">
   <div class="chat-header">
+    <img src="chat.png" alt=""> 
     Mitra
   </div>
   <div class="chatbox" id="chatbox"></div>
   <div class="chat-input-container">
     <input type="text" id="chatInput" class="chat-input" placeholder="Type a message">
     <button onclick="sendMessage()" class="chat-send-button">Send</button>
-    <button onclick="startListening()" class="chat-send-button">🎤</button>
+    <button onclick="startListening()" class="chat-voice-button">🎤</button>
   </div>
 </div>
 
@@ -126,9 +183,7 @@
   <div class="w3-container w3-padding-32" id="about">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
     <p>Welcome to MyBank, where we prioritize your financial well-being. At MyBank, we offer a comprehensive range of banking services tailored to meet your needs. Whether you're looking for a personal loan, home loan, or simply need assistance managing your account, our dedicated team is here to help.
-
-      Our mission is to provide exceptional customer service and innovative financial solutions. We strive to make banking simple, accessible, and beneficial for you. With a focus on security and convenience, MyBank ensures your transactions are safe and your experience is seamless.
-      
+      Our mission is to provide exceptional customer service and innovative financial solutions. We strive to make banking simple, accessible, and beneficial for you. With a focus on security and convenience, MyBank ensures your transactions are safe and your experience is seamless.   
       Join us and discover how MyBank can support your financial goals today and in the future.</p>
   </div>
 
@@ -145,19 +200,149 @@
     const chatWindow = document.getElementById("chatWindow");
     if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
       chatWindow.style.display = "block";
+      // Show initial message with buttons
+      showInitialMessage();
     } else {
       chatWindow.style.display = "none";
     }
   }
 
+  // Function to show initial message with buttons
+  function showInitialMessage() {
+    const chatbox = document.getElementById("chatbox");
+    chatbox.innerHTML = ""; // Clear previous messages
+    const initialMessage = document.createElement("div");
+    initialMessage.className = "bot-message";
+    initialMessage.textContent = "Hello! I am Mitra. How can I assist you today?";
+    chatbox.appendChild(initialMessage);
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "chat-buttons-container";
+    const loanButton = document.createElement("button");
+    loanButton.className = "chat-button-item";
+    loanButton.textContent = "Loan";
+    loanButton.onclick = () => sendQuickReply('loan');
+    buttonContainer.appendChild(loanButton);
+
+    const contactButton = document.createElement("button");
+    contactButton.className = "chat-button-item";
+    contactButton.textContent = "Contact";
+    contactButton.onclick = () => sendQuickReply('contact');
+    buttonContainer.appendChild(contactButton);
+
+    const queryButton = document.createElement("button");
+    queryButton.className = "chat-button-item";
+    queryButton.textContent = "Query";
+    queryButton.onclick = () => sendQuickReply('query');
+    buttonContainer.appendChild(queryButton);
+
+    const interestButton = document.createElement("Interest rate");
+    queryButton.className = "chat-button-item";
+    queryButton.textContent = "Interest Rate";
+    queryButton.onclick = () => sendQuickReply('Interest Rate');
+    buttonContainer.appendChild(interestButton);
+
+    chatbox.appendChild(buttonContainer);
+  }
+
   // Basic chatbot responses
   const responses = {
-    "hi": "Hello!, I am Mitra How can I assist you today?",
-    "hello": "Hi there! What can I do for you?",
-    "loan": "Are you interested in learning more about our home loans or personal loans?",
-    "contact": "You can reach us at contact@mybank.com or call us at (123) 456-7890.",
-    "account": "Need help with your account? I can assist with account queries and transactions.",
-    "default": "I'm sorry, I didn't understand that. Could you please rephrase?"
+    "hi": {
+      "text": "Hello! I am Mitra. How can I assist you today?",
+      "buttons": []
+    },
+    "hello": {
+      "text": "Hi there! What can I do for you today?",
+      "buttons": []
+    },
+    "loan": {
+      "text": "We offer various loan options. Would you like more information on home loans or personal loans?",
+      "buttons": [
+        { "text": "Home Loan", "action": "home_loan_details" },
+        { "text": "Personal Loan", "action": "personal_loan_details" }
+      ]
+    },
+    "contact": {
+      "text": "You can reach us via email or phone. Which do you prefer?",
+      "buttons": [
+        { "text": "Email", "action": "email_contact" },
+        { "text": "Phone", "action": "call_contact" }
+      ]
+    },
+    "home_loan_details": {
+      "text": "Our home loans offer competitive interest rates and flexible repayment options. Would you like to apply?",
+      "buttons": [
+        { "text": "Apply Now", "action": "apply_home_loan" },
+        { "text": "More Info", "action": "more_home_loan_info" }
+      ]
+    },
+    "personal_loan_details": {
+      "text": "Our personal loans can be customized to meet your needs. Would you like to apply?",
+      "buttons": [
+        { "text": "Apply Now", "action": "apply_personal_loan" },
+        { "text": "More Info", "action": "more_personal_loan_info" }
+      ]
+    },
+    "query": {
+      "text": "Our bank offers a variety of financial services to meet your needs. Would you like more information about our loans, accounts, or customer support?",
+      "buttons": [
+        { "text": "Loans", "action": "loan" },
+        { "text": "Accounts", "action": "account" },
+        { "text": "Support", "action": "contact" }
+      ]
+    },
+    "home_loan_info": {
+      "text": "Our home loans offer competitive interest rates and flexible repayment options. Would you like to apply?",
+      "buttons": []
+    },
+    "personal_loan_info": {
+      "text": "Our personal loans come with low-interest rates and easy application process. Would you like to apply?",
+      "buttons": []
+    },
+    "email_contact": {
+      "text": "You can reach us at contact@mybank.com.",
+      "buttons": []
+    },
+    "call_contact": {
+      "text": "You can call us at (123) 456-7890 during our business hours.",
+      "buttons": []
+    },
+    "business_hours": {
+      "text": "Our business hours are Monday to Friday, 9 AM to 5 PM, and Saturday, 10 AM to 2 PM.",
+      "buttons": []
+    },
+    "atm": {
+      "text": "To find the nearest ATM, please use our ATM locator on our website or mobile app.",
+      "buttons": []
+    },
+    "rates": {
+      "text": "Our current interest rates are available on our website. Would you like me to guide you there?",
+      "buttons": []
+    },
+    "apply": {
+      "text": "You can apply for a loan or a new account online. Would you like me to provide the link?",
+      "buttons": []
+    },
+    "statement": {
+      "text": "You can view and download your account statements from your online banking portal.",
+      "buttons": []
+    },
+    "transfer": {
+      "text": "To transfer money, please use our online banking or mobile app. Need further assistance?",
+      "buttons": []
+    },
+    "password": {
+      "text": "If you need to reset your password, please visit the login page and click 'Forgot Password'.",
+      "buttons": []
+    },
+    "services": {
+      "text": "We offer a variety of services including savings accounts, checking accounts, loans, and credit cards.",
+      "buttons": []
+    },
+    "default": {
+      "text": "I'm sorry, I didn't understand that. Could you please repeat?",
+      "buttons": []
+    }
   };
 
   // Function to send message
@@ -168,15 +353,40 @@
     input.value = "";
 
     const userMessageDiv = document.createElement("div");
-    userMessageDiv.textContent = "You: " + userMessage;
+    userMessageDiv.className = "user-message";
+    userMessageDiv.textContent = userMessage;
     chatbox.appendChild(userMessageDiv);
 
-    const botMessage = responses[userMessage] || responses["default"];
+    const botMessage = responses[userMessage]?.text || responses["default"].text;
     const botMessageDiv = document.createElement("div");
-    botMessageDiv.textContent = "Bot: " + botMessage;
+    botMessageDiv.className = "bot-message";
+    botMessageDiv.textContent = botMessage;
     chatbox.appendChild(botMessageDiv);
 
     chatbox.scrollTop = chatbox.scrollHeight;
+    readText(botMessage);
+
+    
+    const buttons = responses[userMessage]?.buttons || [];
+    if (buttons.length > 0) {
+      const buttonContainer = document.createElement("div");
+      buttonContainer.className = "chat-buttons-container";
+      buttons.forEach(button => {
+        const buttonItem = document.createElement("button");
+        buttonItem.className = "chat-button-item";
+        buttonItem.textContent = button.text;
+        buttonItem.onclick = () => sendQuickReply(button.action);
+        buttonContainer.appendChild(buttonItem);
+      });
+      chatbox.appendChild(buttonContainer);
+    }
+  }
+
+  
+  function sendQuickReply(reply) {
+    const chatInput = document.getElementById("chatInput");
+    chatInput.value = reply;
+    sendMessage();
   }
 
   // Function to start listening to voice input
@@ -203,8 +413,21 @@
       console.error("Speech recognition error detected: " + event.error);
     };
   }
+
+  // Function to read text using AI voice
+  function readText(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    // Set the voice to a female voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const femaleVoice = voices.find(voice => voice.name.includes('Female')) || voices[0];
+    utterance.voice = femaleVoice;
+    window.speechSynthesis.speak(utterance);
+  }
 </script>
 
 </body>
 </html>
+
+
+
 

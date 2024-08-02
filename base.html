@@ -2,168 +2,304 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MY BANK</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY BANK Chatbot</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .chat-button img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .chat-window {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .chat-window-header {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+        }
+
+        .chatbox {
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+
+        .chat-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .send-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .user-message, .bot-message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .user-message {
+            background-color: #f1f1f1;
+            text-align: right;
+        }
+
+        .bot-message {
+            background-color: #e0ffe0;
+            text-align: left;
+        }
+
+        .chat-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .chat-button-item {
+            padding: 5px 10px;
+            background-color: #121312;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+    </style>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.143.0.min.js"></script>
 </head>
-
-<style>
-    /* Chatbot Styles */
-.container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.chatbox {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.chatbox__support {
-    display: none;
-    flex-direction: column;
-    width: 300px;
-    max-height: 400px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.chatbox__header {
-    display: flex;
-    align-items: center;
-    background: #4CAF50;
-    padding: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    color: #fff;
-}
-
-.chatbox__image--header img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.chatbox__content--header {
-    flex-grow: 1;
-}
-
-.chatbox__messages {
-    flex-grow: 1;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-.chatbox__footer {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ccc;
-}
-
-.chatbox__footer input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.chatbox__send--footer {
-    margin-left: 10px;
-    padding: 10px;
-    background: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.chatbox__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #4CAF50;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.chatbox__button img {
-    width: 30px;
-    height: 30px;
-}
-
-</style>
 <body>
+
 <!-- Navbar (sit on top) -->
 <div class="w3-top">
-  <div class="w3-bar w3-white w3-wide w3-padding w3-card">
-    <a href="#home" class="w3-bar-item w3-button"><b>MY</b> BANK</a>
-    <!-- Float links to the right. Hide them on small screens -->
-    <div class="w3-right w3-hide-small">
-      <a href="#projects" class="w3-bar-item w3-button">Loans</a>
-      <a href="#about" class="w3-bar-item w3-button">About</a>
-      <a href="#contact" class="w3-bar-item w3-button">Contact</a>
+    <div class="w3-bar w3-white w3-wide w3-padding w3-card">
+        <a href="#home" class="w3-bar-item w3-button"><b>MY</b> BANK</a>
+        <div class="w3-right w3-hide-small">
+            <a href="#projects" class="w3-bar-item w3-button">Loans</a>
+            <a href="#about" class="w3-bar-item w3-button">About</a>
+            <a href="#contact" class="w3-bar-item w3-button">Contact</a>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Header -->
 <header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
-  <img class="w3-image" src="D:\Hackfest\architect.jpg" alt="Architecture" width="1500" height="800">
-  <div class="w3-display-middle w3-margin-top w3-center">
-    <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>MY</b></span> <span class="w3-hide-small w3-text-light-grey">BANK</span></h1>
-  </div>
+    <img class="w3-image" src="architect.jpg" alt="Architecture" width="1500" height="800">
+    <div class="w3-display-middle w3-margin-top w3-center">
+        <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>MY</b></span> <span class="w3-hide-small w3-text-light-grey">BANK</span></h1>
+    </div>
 </header>
 
-<!-- Page content -->
-<div class="w3-content w3-padding" style="max-width:1564px">
-  <!-- About Section -->
-  <div class="w3-container w3-padding-32" id="about">
-    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
-    <p>Welcome</p>
-  </div>
+<!-- Chatbot Button and Window -->
+<button class="chat-button" onclick="toggleChat()">
+    <img src="chat.png" alt="Chat">
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-window-header">Mitra - Your Assistant</div>
+    <div class="chatbox" id="chatbox"></div>
+    <div class="chat-input-container">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Type your message..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <button class="send-button" onclick="sendMessage()">Send</button>
+    </div>
+    <!-- Voice interaction button -->
+    <button id="voice-button" class="send-button" onclick="startVoiceInteraction()">🎤 Speak</button>
 </div>
 
 <!-- Footer -->
 <footer class="w3-center w3-black w3-padding-16">
-  <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">MY BANK</a></p>
+    <p><a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">MY BANK</a></p>
 </footer>
 
-<!-- Chatbot -->
-<div class="container">
-    <div class="chatbox">
-        <div class="chatbox__support">
-            <div class="chatbox__header">
-                <div class="chatbox__image--header">
-                    <img src="chatbot.png" alt="chatbot">
-                </div>
-                <div class="chatbox__content--header">
-                    <h4 class="chatbox__heading--header">Mitra</h4>
-                    <p class="chatbox__description--header">Hey there!, Welcome to MyBank! How can I assist you today?</p>
-                </div>
-            </div>
-            <div class="chatbox__messages">
-                <div></div>
-            </div>
-            <div class="chatbox__footer">
-                <input type="text" placeholder="Write a message...">
-                <button class="chatbox__send--footer send__button">Send</button>
-            </div>
-        </div>
-        <div class="chatbox__button">
-            <button><img src="D:\Hackfest\chat.png" alt="chat icon"></button>
-        </div>
-    </div>
-</div>
+<script>
+  // AWS Polly Configuration
+  AWS.config.update({
+    accessKeyId: 'YOUR_ACCESS_KEY_ID',
+    secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
+    region: 'YOUR_AWS_REGION'
+  });
 
-<script src="app.js"></script>
+  const polly = new AWS.Polly();
+
+  // Function to toggle chat window visibility
+  function toggleChat() {
+    const chatWindow = document.getElementById("chatWindow");
+    if (chatWindow.style.display === "none" || chatWindow.style.display === "") {
+      chatWindow.style.display = "block";
+      showInitialMessage();
+    } else {
+      chatWindow.style.display = "none";
+    }
+  }
+
+  // Function to show initial message with buttons
+  function showInitialMessage() {
+    const chatbox = document.getElementById("chatbox");
+    chatbox.innerHTML = ""; // Clear previous messages
+    const initialMessage = document.createElement("div");
+    initialMessage.className = "bot-message";
+    initialMessage.textContent = "Hello! I am Mitra. How can I assist you today?";
+    chatbox.appendChild(initialMessage);
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "chat-buttons-container";
+
+    const buttons = ["Loan", "Contact", "Query", "Interest Rate"];
+    buttons.forEach(buttonText => {
+      const button = document.createElement("button");
+      button.className = "chat-button-item";
+      button.textContent = buttonText;
+      button.onclick = () => sendQuickReply(buttonText.toLowerCase());
+      buttonContainer.appendChild(button);
+    });
+
+    chatbox.appendChild(buttonContainer);
+  }
+
+  // Function to send message to Rasa server
+  function sendMessage() {
+    const chatbox = document.getElementById("chatbox");
+    const input = document.getElementById("chatInput");
+    const userMessage = input.value;
+    input.value = "";
+
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.className = "user-message";
+    userMessageDiv.textContent = userMessage;
+    chatbox.appendChild(userMessageDiv);
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+
+    // Send user message to Rasa server
+    fetch("http://localhost:5005/webhooks/rest/webhook", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ sender: "user", message: userMessage })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const botMessageDiv = document.createElement("div");
+        botMessageDiv.className = "bot-message";
+        
+        if (data && data.length > 0) {
+            botMessageDiv.textContent = data[0].text || "I didn't understand that. Could you please repeat?";
+        } else {
+            botMessageDiv.textContent = "I didn't understand that. Could you please repeat?";
+        }
+        
+        chatbox.appendChild(botMessageDiv);
+        chatbox.scrollTop = chatbox.scrollHeight;
+        
+        // Read the bot's message aloud using Amazon Polly
+        readText(botMessageDiv.textContent);
+    })
+    .catch(error => {
+        console.error("Error communicating with Rasa server:", error);
+        const botMessageDiv = document.createElement("div");
+        botMessageDiv.className = "bot-message";
+        botMessageDiv.textContent = "I'm having trouble connecting to the server. Please try again later.";
+        chatbox.appendChild(botMessageDiv);
+    });
+  }
+
+  // Function to send quick reply
+  function sendQuickReply(reply) {
+    const chatInput = document.getElementById("chatInput");
+    chatInput.value = reply;
+    sendMessage();
+  }
+
+  // Function to start voice interaction
+  function startVoiceInteraction() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.lang = 'en-US';
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const chatInput = document.getElementById("chatInput");
+        chatInput.value = transcript;
+        sendMessage();
+    };
+
+    recognition.onspeechend = function() {
+        recognition.stop();
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Speech recognition error detected: " + event.error);
+    };
+  }
+
+  // Function to read text using Amazon Polly
+  function readText(text) {
+    const params = {
+      Text: text,
+      OutputFormat: 'MP3',
+      VoiceId: 'Joanna'  // Select voice, e.g., Joanna for female US English
+    };
+
+    polly.synthesizeSpeech(params, function(err, data) {
+      if (err) {
+        console.error("Error synthesizing speech: ", err);
+        return;
+      }
+
+      const audio = new Audio(URL.createObjectURL(new Blob([data.AudioStream])));
+      audio.play();
+    });
+  }
+</script>
+
 </body>
 </html>
+
